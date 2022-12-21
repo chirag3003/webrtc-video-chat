@@ -79,7 +79,7 @@ webcamButton.onclick = async () => {
             remoteStream.addTrack(track);
         });
     };
-
+    console.log(webcamVideo.srcObject);
     webcamVideo.srcObject = localStream;
     remoteVideo.srcObject = remoteStream;
 
@@ -125,6 +125,8 @@ callButton.onclick = async () => {
             }
         });
     });
+
+    hangupButton.disabled = false;
 };
 
 answerButton.onclick = async () => {
@@ -160,4 +162,26 @@ answerButton.onclick = async () => {
             }
         });
     });
+    hangupButton.disabled = false;
+};
+
+function close() {
+    let stream = webcamVideo.srcObject;
+    const tracks = stream.getTracks();
+    tracks.forEach((track) => {
+        track.stop();
+    });
+    webcamVideo.srcObject = null;
+    remoteVideo.srcObject = null;
+    pc.close();
+}
+
+hangupButton.onclick = () => {
+    close();
+};
+
+pc.oniceconnectionstatechange = () => {
+    if (pc.iceConnectionState === "disconnected") {
+        close();
+    }
 };
